@@ -13,12 +13,15 @@ namespace Cab_Invoice_Generator
         private static readonly double MINIMUM_FARE = 5.0;
         private double CAB_FARE = 0.0;
 
+        private RideRepository rideRepository = new RideRepository();
+
 
         public double CalculateFare(double distance, double time)
         {
             this.CAB_FARE = (distance * COST_PER_KILOMETER) + (time * COST_PER_MINUTE);
             return Math.Max(this.CAB_FARE, MINIMUM_FARE);
-        }   
+        }
+      
         public EnhancedInvoiceSummary GetMultipleRideFare(Ride[] rides)
         {
             double totalFare = 0.0;
@@ -28,6 +31,13 @@ namespace Cab_Invoice_Generator
             }
             return new EnhancedInvoiceSummary(totalFare, rides.Length);
         }
+        public void MapRidesToUser(string userID, Ride[] rides)
+        {
+            this.rideRepository.AddCabRides(userID, rides);
+        }
+        public EnhancedInvoiceSummary GetEnhancedInvoiceSummary(string userID)
+        {
+            return this.GetMultipleRideFare(this.rideRepository.GetCabRides(userID));
+        }
     }
 }
-    
